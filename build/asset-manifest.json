@@ -1,0 +1,34 @@
+{
+  "files": {
+    "main.css": "/static/css/main.d23ee4a1.chunk.css",
+    "main.js": "/static/js/main.264dd9b8.chunk.js",
+    "main.js.map": "/static/js/main.264dd9b8.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.88a93377.js",
+    "runtime-main.js.map": "/static/js/runtime-main.88a93377.js.map",
+    "static/js/2.4b4f12ae.chunk.js": "/static/js/2.4b4f12ae.chunk.js",
+    "static/js/2.4b4f12ae.chunk.js.map": "/static/js/2.4b4f12ae.chunk.js.map",
+    "static/js/3.91f22852.chunk.js": "/static/js/3.91f22852.chunk.js",
+    "static/js/3.91f22852.chunk.js.map": "/static/js/3.91f22852.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.d23ee4a1.chunk.css.map": "/static/css/main.d23ee4a1.chunk.css.map",
+    "static/js/2.4b4f12ae.chunk.js.LICENSE.txt": "/static/js/2.4b4f12ae.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/static/media/Superfats-6PRM.67f64f26.ttf",
+    "static/media/Cornsilk-concha.cc598583.png": "/static/media/Cornsilk-concha.cc598583.png",
+    "static/media/chef-boi.0b1efdd3.png": "/static/media/chef-boi.0b1efdd3.png",
+    "static/media/conchas-logo.62a792e6.png": "/static/media/conchas-logo.62a792e6.png",
+    "static/media/roadmap.scss": "/static/media/conchas.0a27b32c.png",
+    "static/media/index.sass": "/static/media/conchas_white.f2791827.png",
+    "static/media/crypto-conchas-logo.ce4373d9.png": "/static/media/crypto-conchas-logo.ce4373d9.png",
+    "static/media/discord.62d7274c.png": "/static/media/discord.62d7274c.png",
+    "static/media/pink-instagram.bd5d6780.png": "/static/media/pink-instagram.bd5d6780.png",
+    "static/media/royal-blue-v2.4425bb38.png": "/static/media/royal-blue-v2.4425bb38.png",
+    "static/media/software.21ecb5b6.png": "/static/media/software.21ecb5b6.png",
+    "static/media/twitter.e5db7caf.png": "/static/media/twitter.e5db7caf.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.88a93377.js",
+    "static/js/2.4b4f12ae.chunk.js",
+    "static/css/main.d23ee4a1.chunk.css",
+    "static/js/main.264dd9b8.chunk.js"
+  ]
+}

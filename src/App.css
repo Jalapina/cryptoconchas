@@ -1,0 +1,48 @@
+.appContainer {
+  text-align: center;
+  overflow: hidden !important;
+  position: relative;
+}
+
+.MuiPaper-elevation1{
+  box-shadow: none !important;
+  width: 70% !important;
+}
+
+.kQMbuS{
+  width: 85% !important;
+}
+/* .gAAyGs{
+  color: #f1f1f1 !important;
+  background: #f49af6 !important;
+} */
+.MuiButton-label{
+  font-family: 'Bounties' !important;
+}
+
+.MuiTypography-colorTextSecondary{
+  font-family: 'Superfats' !important;   
+  color: #000 !important;  
+}
+.MuiTypography-colorTextPrimary{
+  color: #000 !important;
+  font-family: 'Bounties' !important;    
+}
+.makeStyles-done-3{
+  color: #fe6346 !important;  
+  font-family: 'Bounties' !important;    
+}
+.MuiGrid-grid-xs-3{
+  max-width: 50% !important;
+  flex-basis: 50% !important;  
+}
+.MuiGrid-wrap-xs-nowrap{
+  flex-wrap: wrap !important;
+}
+@media (min-width: 1280px){
+
+  .MuiContainer-maxWidthLg{
+    max-width: 100% !important;
+  }
+  
+}
