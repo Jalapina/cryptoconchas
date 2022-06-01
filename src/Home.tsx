@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { sleep } from '@oyster/common';
 import * as anchor from '@project-serum/anchor';
 import styled from 'styled-components';
 import { Container, Snackbar } from '@material-ui/core';
+import { Button} from 'antd';
 import Paper from '@material-ui/core/Paper';
 import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
-import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+// import Metadata from '@metaplex-foundation/mpl-token-metadata';
+// import { deprecated } from "@metaplex-foundation/mpl-token-metadata";
+import { programs } from '@metaplex/js';
 import Typography from '@material-ui/core/Typography';
 import { Connection, clusterApiUrl,PublicKey } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -29,7 +31,9 @@ import conchaPink from './201.png';
 import bs58 from 'bs58';
 import $ from 'jquery';
 
-const connection = new Connection('mainnet-beta');
+import Modal from "./modal";
+import useModal from './useModal';
+
 const MAX_NAME_LENGTH = 32;
 const MAX_URI_LENGTH = 200;
 const MAX_SYMBOL_LENGTH = 10;
@@ -38,7 +42,7 @@ const MAX_CREATOR_LIMIT = 5;
 const MAX_DATA_SIZE = 4 + MAX_NAME_LENGTH + 4 + MAX_SYMBOL_LENGTH + 4 + MAX_URI_LENGTH + 2 + 1 + 4 + MAX_CREATOR_LIMIT * MAX_CREATOR_LEN;
 const MAX_METADATA_LEN = 1 + 32 + 32 + MAX_DATA_SIZE + 1 + 1 + 9 + 172;
 const CREATOR_ARRAY_START = 1 + 32 + 32 + 4 + MAX_NAME_LENGTH + 4 + MAX_URI_LENGTH + 4 + MAX_SYMBOL_LENGTH + 2 + 1 + 4;
-const candyMachineId = new PublicKey("6Xua2ADACy9kpBM66ErFTWXf4SJ9HoX1T2ALQ1c5e21J");
+const candyMachineId = new PublicKey("E7CQio46GJz16H6bzkyV4N8nqoVKyT9DPJcV6j6ihMuv");
 const ConnectButton = styled(WalletDialogButton)`
   width: 85%;
   height: 60px;
@@ -59,15 +63,19 @@ export interface HomeProps {
   rpcHost: string;
 }
 
-const DisplayImage = ({nftAddress}:any) => {
-  const [nftMetadata, setNftMetadata] = useState<any>()
+const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
 
+  const [nftMetadata, setNftMetadata] = useState<any>();
+  const[NftIsClicked, setNftIsClicked] = useState<boolean>(false);
+
+  const handleClick = useCallback(
+    () => setNftIsClicked(!NftIsClicked),
+    [NftIsClicked, setNftIsClicked],
+  );
+  
   const GetURI = async () => {
 
-    const metadataPDA = await Metadata.getPDA(new PublicKey(nftAddress));
-    const tokenMetadata = await Metadata.load(connection, metadataPDA);
-
-    await fetch(tokenMetadata.data.data.uri , {
+    await fetch(nftAddress.uri , {
         cache: 'force-cache'
       })
       .then(data => {
@@ -89,28 +97,49 @@ const DisplayImage = ({nftAddress}:any) => {
   }, [nftAddress]);
   
   return (
-      <div>
+      <div onClick={handleClick}>
+        
         {nftMetadata?(
           <div>
+            <div className={"modal " + ( NftIsClicked ? `modalOpen` : "")}>
+              
+                <div  onClick={handleClick}  className="close-icon-wrapper">
+                  {/* <img onClick={nftExpanded} className="close-icon" width="40px" src={closeIcon}/> */}
+                </div>
+
+                {NftIsClicked ?(
+                  <div className="modal-container">
+
+                    <div className="nft-image-focus">
+                      <img width="200px" src={nftMetadata.image} />
+                    </div>
+                    
+                    <div className="token-options">
+                      <h2 className="token-name">{nftMetadata.name}</h2>
+                    </div>
+                  </div>
+                ): ""}
+            </div>
+
             <img style={{width:"150px"}} src={nftMetadata ? nftMetadata?.image:""}/>
+
           </div>
         ):
-        <div className="loading-animation">
-          <svg className="blob"
-              viewBox="0 0 550 550"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+        <div className="loading-animation" >
+
+          <svg className="blob" viewBox="0 0 550 550" xmlns="http://www.w3.org/2000/svg">
               <g transform="translate(300,300)">
                 <path d="M120,-157.6C152.7,-141.5,174.3,-102.6,194.8,-58.8C215.3,-14.9,234.6,33.8,228.4,80.8C222.2,127.8,190.4,173.1,148.1,184C105.8,195,52.9,171.5,-2.4,174.8C-57.8,178.2,-115.6,208.4,-137.5,190.9C-159.3,173.3,-145.3,108,-153,56.3C-160.7,4.6,-190.2,-33.4,-178.3,-54.2C-166.4,-75.1,-113.2,-78.8,-76.6,-93.6C-40,-108.3,-20,-134.2,11.9,-150.5C43.7,-166.8,87.4,-173.6,120,-157.6Z" fill="#FE840E" />
               </g>
-            </svg>
+          </svg>
                 
-            <div className="share">
-              <svg className="twitter" viewBox="0 0 612 612" >
-                <path className="ani" d="M 612 116 c -23 10 -47 17 -72 20 26 -15 46 -40 55 -69 -24 14 -51 24 -80 30 a 125 125 0 0 0 -217 86 c 0 10 1 19 3 29 -104 -6 -196 -56 -258 -132 a 125 125 0 0 0 39 168 c -21 -1 -40 -6 -57 -16 v 2 c0 61 43 111 100 123 a127 127 0 0 1 -56 2 c 16 50 62 86 117 87 A 252 252 0 0 1 0 498 a 355 355 0 0 0 550 -301 l -1 -16 c 25 -17 46 -40 63 -65 z"  />
-                <path d="M 612 116 c -23 10 -47 17 -72 20 26 -15 46 -40 55 -69 -24 14 -51 24 -80 30 a 125 125 0 0 0 -217 86 c 0 10 1 19 3 29 -104 -6 -196 -56 -258 -132 a 125 125 0 0 0 39 168 c -21 -1 -40 -6 -57 -16 v 2 c0 61 43 111 100 123 a127 127 0 0 1 -56 2 c 16 50 62 86 117 87 A 252 252 0 0 1 0 498 a 355 355 0 0 0 550 -301 l -1 -16 c 25 -17 46 -40 63 -65 z"  />
-              </svg>
-            </div>
+          <div className="share">
+            <svg className="twitter" viewBox="0 0 612 612" >
+              <path className="ani" d="M 612 116 c -23 10 -47 17 -72 20 26 -15 46 -40 55 -69 -24 14 -51 24 -80 30 a 125 125 0 0 0 -217 86 c 0 10 1 19 3 29 -104 -6 -196 -56 -258 -132 a 125 125 0 0 0 39 168 c -21 -1 -40 -6 -57 -16 v 2 c0 61 43 111 100 123 a127 127 0 0 1 -56 2 c 16 50 62 86 117 87 A 252 252 0 0 1 0 498 a 355 355 0 0 0 550 -301 l -1 -16 c 25 -17 46 -40 63 -65 z"  />
+              <path d="M 612 116 c -23 10 -47 17 -72 20 26 -15 46 -40 55 -69 -24 14 -51 24 -80 30 a 125 125 0 0 0 -217 86 c 0 10 1 19 3 29 -104 -6 -196 -56 -258 -132 a 125 125 0 0 0 39 168 c -21 -1 -40 -6 -57 -16 v 2 c0 61 43 111 100 123 a127 127 0 0 1 -56 2 c 16 50 62 86 117 87 A 252 252 0 0 1 0 498 a 355 355 0 0 0 550 -301 l -1 -16 c 25 -17 46 -40 63 -65 z"  />
+            </svg>
+          </div>
+
         </div>
       }
       </div>
@@ -118,9 +147,9 @@ const DisplayImage = ({nftAddress}:any) => {
 
 }
 
-
 const Home = (props: HomeProps) => {
-  const [emptyArray,setEmptyArray] = useState<string[]>([])
+  const {isShowing, toggle} = useModal();  
+  const [emptyArray,setEmptyArray] = useState<any[]>([])
   const [metadata,setMetadata] = useState();
   const [isUserMinting, setIsUserMinting] = useState(false);
   const [candyMachine, setCandyMachine] = useState<CandyMachineAccount>();
@@ -141,7 +170,7 @@ const Home = (props: HomeProps) => {
 
   const getMintAddresses = async (firstCreatorAddress: PublicKey) => {
 
-    const metadataAccounts = await connection.getProgramAccounts(
+    const metadataAccounts = await props.connection.getProgramAccounts(
       TOKEN_METADATA_PROGRAM_ID,
         {
           // The mint address is located at byte 33 and lasts for 32 bytes.
@@ -176,37 +205,61 @@ const Home = (props: HomeProps) => {
 
   const getNFTs = async () => {
 
+    const { Metadata } = programs.metadata;
     try{
 
         const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
         const mints = await getMintAddresses(candyMachineCreator[0]);
+        
         if(mints.length > 0){
-          for(let i=0;i<=mints.length;i++){ 
-              const metadataPDA = await Metadata.getPDA(new PublicKey(mints[i]));
-              const tokenMetadata = await Metadata.load(connection, metadataPDA);
-              setEmptyArray(oldArray => [...oldArray, mints[i]]);        
+          for(let i=0;i<mints.length;i++){
+            
+              const metadata = await Metadata.getPDA(new PublicKey(mints[i]));
+              const tokenMetadata = await Metadata.load(props.connection, metadata);
+              console.log(metadata,mints[i]);
+              
+              setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:mints[i]}]);
+
             }
           }
           
-        } 
-        catch(err){
-          console.log(err);
-        }
+      } 
+      catch(err){
+        console.log(err);
+      }
+
   };
 
-  const updateArray = async () => {
+  const updateArray = () => {
+
+    const { Metadata } = programs.metadata;
     
-    await sleep(15000);
-    
-    if (wallet.connected && candyMachine?.program && wallet.publicKey) {
+     setTimeout(async() => {
+       
+      if (wallet.connected && candyMachine?.program && wallet.publicKey) {
+        
+        const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
+        const mints = await getMintAddresses(candyMachineCreator[0]);
+        
+        if(mints.length>emptyArray.length){
+
+
+          const uniqueAddress = mints.filter(function(address) {
+            return !emptyArray.some(function(obj2) {
+              return address == obj2.address;
+            });
+          });
+          
+          const metadata = await Metadata.getPDA(new PublicKey(uniqueAddress[0]));
+          const tokenMetadata = await Metadata.load(props.connection, metadata);
+          setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:uniqueAddress}]);
+            
       
-      const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
-      const mints = await getMintAddresses(candyMachineCreator[0]);
+        }
+        
+   
 
-      const uniqueAddress = mints.filter(x => emptyArray.indexOf(x) === -1);
-      setEmptyArray(oldArray => [...oldArray, uniqueAddress[0]]);
-
-    }
+      }},30000);
 
   }
   
@@ -245,7 +298,6 @@ const Home = (props: HomeProps) => {
           props.candyMachineId,
           props.connection,
         );
-        console.log(cndy);
         let active =
           cndy?.state.goLiveDate?.toNumber() < new Date().getTime() / 1000;
         let presale = false;
@@ -445,7 +497,6 @@ const Home = (props: HomeProps) => {
 
   return (
     <div className="mint-container">
-
       <Container
         style={{
           margin: `200px 0px 200px 0px`,
@@ -613,6 +664,7 @@ const Home = (props: HomeProps) => {
             </Typography>
           </Paper>
         </Container>
+
         <Snackbar
           open={alertState.open}
           autoHideDuration={6000}
@@ -627,13 +679,13 @@ const Home = (props: HomeProps) => {
         </Snackbar>
         
       </Container>
-      <div className="inventory" style={{boxShadow:"inset 1px 1px 5px #000",background:"#ffd495",color:"#fff",padding:"20px"}} >
+      <div className="inventory" style={{boxShadow:"inset 1px 1px 5px #000",background:"#ffd495",color:"#fff"}} >
         {(() => {
             if(emptyArray.length>0){
               return(
                 <div className="token-image-container" >
-                  <p className="other-font" style={{fontFamily: 'Bounties'}}>Minted Bakery</p>
-                  <p className="other-font">
+                  <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Minted Bakery</h2>
+                  <p className="other-font mint-count">
                     {emptyArray.length}/1500
                   </p>
                   {
@@ -641,7 +693,7 @@ const Home = (props: HomeProps) => {
                     return (
                       <div key={index} className="display-image-container" style={{display:"inline-block"}}>
                         <DisplayImage
-                          nftAddress={emptyArray[index]}
+                          nftAddress={nftAddress}
                           />
                       </div>
                     )})
@@ -652,7 +704,7 @@ const Home = (props: HomeProps) => {
               return(                
                 <div className="no-artwork">
                   
-                  <p className="other-font">You're low on bread!</p>
+                  <p className="slideDown other-font low-on-bread">You're low in bread!</p>
 
                 </div>
                 )

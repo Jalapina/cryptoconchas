@@ -217,7 +217,7 @@ const App = () => {
                   <li>
                     Download and install a Chrome browser plugin called{' '}
                     <a href="https://phantom.app/download">Phantom Wallet</a>.
-                    This will allow websites (that you authorize) access to your
+                    This will allow websites <span style={{fontFamily:'Bounties'}}> (that you authorize) </span>access to your
                     Solana account.
                   </li>
                   <li>
@@ -242,8 +242,8 @@ const App = () => {
               <div className="faq-answer">
                 <ul>
                   <li>
-                    Non-fungible token or NFT is a unique token that points to
-                    WHATEVER YOU WANT, usually a url of a picture | video or a
+                    Non-fungible token or NFT is a unique token that points to{" "}
+                    <span style={{fontFamily:'Bounties'}}>WHATEVER YOU WANT</span>, usually a URL of a picture, video or a
                     concha.
                   </li>
 
@@ -267,7 +267,7 @@ const App = () => {
               <div className="faq-answer">
                 <ul>
                   <li>
-                    Download and install{' '}
+                    Download and install the{" "}
                     <a href="https://phantom.app/download">Phantom Wallet</a> if
                     you're on chrome or a suitable alternative.
                   </li>
@@ -282,14 +282,14 @@ const App = () => {
               <div className="faq-answer">
                 <ul>
                   <li>
-                    The blockchain is a distributed database (Used to store
-                    data).
+                    The blockchain is a distributed database <span style={{fontFamily:'Bounties'}}>(Used to store
+                    data).</span>
                   </li>
                   <li>
                     The data stored on a blockchain is a ledger of transactions.
                   </li>
                   <li>
-                    Blockchains store data (transactions) in chronological
+                    Blockchains store data <span style={{fontFamily:'Bounties'}}>(transactions)</span> in chronological
                     groups, known as blocks, instead of folders and tables like
                     normal databases.
                   </li>
@@ -313,15 +313,15 @@ const App = () => {
               <div className="faq-answer">
                 <p>
                   Conchas get their name from their round shape and striped
-                  seashell(concha in spanish) like appearance. A concha consists
-                  of two parts, a sweetened bread roll, and a crunchy topping.
+                  seashell <span style={{fontFamily:'Bounties'}}>(concha in spanish)</span> like appearance. A concha consists
+                  of two parts; a sweetened bread roll, and a crunchy topping.
                 </p>
                 <p>
                   Conchas are a Mexican style sweet bread that was orignially
                   inspiration by Brioche, but somewhere along the way we decided
                   to make it fun and added colorful sugar on top and now rest is
                   history. You can find conchas all over North America at any
-                  Mexican bakery (Mexico and the U.S)
+                  Mexican bakery <span style={{fontFamily:'Bounties'}}>(Mexico and the U.S)</span>
                 </p>
               </div>
             </div>
@@ -331,7 +331,7 @@ const App = () => {
               </div>
               <div className="faq-answer">
                 <p>
-                  Easy, all you need it flour | butter | milk | eggs and baking
+                  Easy! All you need it flour 🍞 butter 🧈 milk 🥛 eggs 🥚 and baking
                   powder
                 </p>
                 <a
@@ -358,8 +358,10 @@ const App = () => {
                   on the internet.
                 </p>
                 <p>
-                  We believe in web3 and see a future where everyone utilizes
-                  it. We want to be part of building that future.
+                  We like  blockchain technology and all it can do. Our team invisions a future where we all use, so we created something fun with it.
+                </p>
+                <p>
+                  We want to build better and cooler things, <span style={{fontFamily:'Bounties'}}>Crypto Conchas</span> was just the begining. ✌️ 
                 </p>
               </div>
             </div>

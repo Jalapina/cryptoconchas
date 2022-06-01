@@ -39,10 +39,84 @@
 .MuiGrid-wrap-xs-nowrap{
   flex-wrap: wrap !important;
 }
+.token-image-container{
+ text-align: left; 
+}
+.display-image-container{
+  vertical-align: top;
+  width: 105px;
+  height: 150px;
+}
+modal-overlay
+.modal{
+  display: none;
+}
+.modalOpen{
+  display: block;
+  background: #ff98fb;
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  margin: auto;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+.modal-container{
+  background: #000000;
+  font-family: 'Bounties';
+  width: 350px;
+  margin: auto;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 30%;
+  text-align: center;
+  padding: 20px;
+  box-shadow: -2px 5px 10px #73006f;
+  border-radius: 20px;
+}
+.minted-bakery-title{
+  font-size: 4em;
+  text-align: left;
+  margin-left: 15px;
+}
+.mint-count{
+  font-size: 2em;
+  font-family: 'Bounties';
+  text-align: left;
+  margin-left: 20px;
+  position: relative;
+  bottom: 25px;
+}
+.low-on-bread{
+  font-family: 'Superfats' !important;
+  font-size: 3em;  
+}
+.inventory{
+  padding:25px;
+  overflow: hidden;
+}
 @media (min-width: 1280px){
-
+  
   .MuiContainer-maxWidthLg{
     max-width: 100% !important;
   }
   
+  .inventory{
+    padding: 45px;
+  }  
+  
+}
+.slideDown {
+  top:-40px;
+  left:5px;
+  animation: slideDown ease .9s forwards .6s;
+}
+
+
+@keyframes slideDown {
+  0% {transform: translateY(-170px);}
+  100% {transform: translateY(20px);opacity:1;}
 }
