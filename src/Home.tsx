@@ -161,6 +161,7 @@ const Home = (props: HomeProps) => {
   const [isClicked,setIsClicked] = useState<boolean>(false)
   const [emptyArray,setEmptyArray] = useState<any[]>([])
   const [mintAddresses,setMintAddresses] = useState<any[]>([])
+  const [walletNFTAddresses,setWalletNFTAddresses] = useState<any[]>([])
 
   const [viewCount, setViewCount] = useState({prevCount:24,newCount:24});
 
@@ -205,78 +206,59 @@ const Home = (props: HomeProps) => {
     )
   );
 
-  // const getCurrentWalletNFTs =  async () =>{
-  //   try{
-      
-  //     const { Metadata } = programs.metadata;
+  const addViewCount = () =>{
 
-  //     if (wallet.connected && candyMachine?.program && wallet.publicKey) {
-  //       console.log(anchorWallet.publicKey);
-        
-  //       const allNFTs = await Metadata.findByOwnerV2(props.connection,anchorWallet.publicKey);
-  //     }
-        
-              
-  //     } 
-  //     catch(err){
-  //       console.log(err);
-  //     }
-  // }
+    let newCount = viewCount.newCount + 5
+    setViewCount({...viewCount, prevCount: viewCount.newCount});
 
-const addViewCount = () =>{
+    if(viewCount.newCount%mintAddresses.length===1){
+      return viewCount
+    }else if(newCount>mintAddresses.length){
 
-  let newCount = viewCount.newCount + 5
-  setViewCount({...viewCount, prevCount: viewCount.newCount});
+      newCount = mintAddresses.length - viewCount.newCount;
+      setViewCount({...viewCount, prevCount: viewCount.newCount, newCount:viewCount.newCount+newCount});
+    }
+    else{
+      setViewCount({...viewCount,prevCount: viewCount.newCount, newCount:newCount});
+    }
 
-  if(viewCount.newCount%mintAddresses.length===1){
-    return viewCount
-  }else if(newCount>mintAddresses.length){
-
-    newCount = mintAddresses.length - viewCount.newCount;
-    setViewCount({...viewCount, prevCount: viewCount.newCount, newCount:viewCount.newCount+newCount});
-  }
-  else{
-    setViewCount({...viewCount,prevCount: viewCount.newCount, newCount:newCount});
+    setIsClicked(true);
   }
 
-  setIsClicked(true);
-}
+  const getNftMetadata = async () =>{
+    const { Metadata } = programs.metadata;
 
+    try{
 
-const getMints = async () =>{
-  const { Metadata } = programs.metadata;
+      if(mintAddresses.length>0){
+        for(let i=0;i<viewCount.newCount;i++){
+          
+            const metadata = await Metadata.getPDA(new PublicKey(mintAddresses[i]));
+            const tokenMetadata = await Metadata.load(props.connection, metadata);
+            setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:mintAddresses[i]}]);
 
-  try{
-
-    if(mintAddresses.length>0){
-      for(let i=0;i<viewCount.newCount;i++){
-        
-          const metadata = await Metadata.getPDA(new PublicKey(mintAddresses[i]));
-          const tokenMetadata = await Metadata.load(props.connection, metadata);
-          setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:mintAddresses[i]}]);
-
+          }
         }
-      }
-      
-  } 
-  catch(err){
-    console.log(err);
-  }
-}
-
-const getNFTs = async () => {
-    const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
-    const mints = await getMintAddresses(candyMachineCreator[0]);
         
-    setMintAddresses(mints);
-};
+    } 
+    catch(err){
+      console.log(err);
+    }
+  }
 
-const updateArray = () => {
+  const getNFTAddresses = async () => {
+      const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
+      const mints = await getMintAddresses(candyMachineCreator[0]);
+          
+      setMintAddresses(mints);
+  };
+
+  const updateArray = () => {
 
     const { Metadata } = programs.metadata;
     
-     setTimeout(async() => {
-       
+      setTimeout(async() => {
+        
       if (wallet.connected && candyMachine?.program && wallet.publicKey) {
         
         const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
@@ -305,7 +287,7 @@ const updateArray = () => {
   
   useEffect(()=>{
     if(emptyArray.length<=1){
-      getMints();
+      getNftMetadata();
     }
   },[mintAddresses]);
 
@@ -333,9 +315,11 @@ const updateArray = () => {
 
   useEffect(()=>{
       if(emptyArray.length<=1){
-        getNFTs();
+        getNFTAddresses();
       }
+
   },[]);
+
 
   const anchorWallet = useMemo(() => {
     if (
@@ -346,13 +330,44 @@ const updateArray = () => {
     ) {
       return;
     }
-
+    
     return {
       publicKey: wallet.publicKey,
       signAllTransactions: wallet.signAllTransactions,
       signTransaction: wallet.signTransaction,
     } as anchor.Wallet;
   }, [wallet]);
+
+
+  useEffect(()=>{
+
+      if (wallet.connected && wallet.ready && wallet.publicKey) {
+        console.log(wallet)
+        getCurrentWalletNFTs();
+      }
+    
+  },[wallet.connected, wallet.ready]);
+
+  const getCurrentWalletNFTs =  async () =>{
+    
+    const { Metadata } = programs.metadata;
+    
+    try{
+      if (wallet.connected && wallet.ready && wallet.publicKey) {
+          
+          const allNFTs = await Metadata.findDataByOwner(props.connection,wallet.publicKey);
+          const CandyNFT = allNFTs.filter((r) => r.updateAuthority === "C5hqyJpUU1o28q2fcdyTkTwRdCCrDUqjccFnik9ZW25k");
+
+          for(let i=0;i<CandyNFT.length;i++){
+            setWalletNFTAddresses(oldArray => [{uri:CandyNFT[i].data.uri,address:CandyNFT[0].mint},...oldArray]);
+          }
+          
+        }       
+      } 
+      catch(err){
+        console.log(err);
+      }
+  }
 
   const refreshCandyMachineState = useCallback(async () => {
     if (!anchorWallet) {
@@ -748,18 +763,17 @@ const updateArray = () => {
         <div>
 
           {/* <img style={{width:"75%", margin:"10%"}} src={soon}/> */}
-          
-          <h2 style={{fontFamily: 'Bounties'}}>Your Bakery</h2>
-          {/* {(() => {
-            if(emptyArray.length>0){
+    
+          {(() => {
+            if(walletNFTAddresses.length>0){
               return(
                 <div className="token-image-container" >
-                  <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Minted Bakery</h2>
+                  <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Your Bakery</h2>
                   <p className="other-font mint-count">
-                    {emptyArray.length}/1500
+                    {walletNFTAddresses.length}
                   </p>
                   {
-                  emptyArray.map((nftAddress, index)=>{
+                  walletNFTAddresses.map((nftAddress, index)=>{
                     return (
                       <div key={index} className="display-image-container" style={{display:"inline-block", position:"relative"}}>
                         <DisplayImage
@@ -774,12 +788,12 @@ const updateArray = () => {
               return(                
                 <div className="no-artwork">
                   
-                   <p className="slideDown other-font low-on-bread">You're low on bread!</p> 
+                   <p className="slideDown other-font low-on-bread">Getting your bread...</p> 
 
                 </div>
                 )
             }  
-          })()} */}
+          })()}
         </div>
 
         {(() => {
@@ -788,7 +802,7 @@ const updateArray = () => {
                 <div className="token-image-container" >
                   <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Minted Bakery</h2>
                   <p className="other-font mint-count">
-                    {mintAddresses.length}/1500
+                    {mintAddresses.length}/1996
                   </p>
                   {
                   emptyArray.map((nftAddress, index)=>{
@@ -804,7 +818,7 @@ const updateArray = () => {
                   }
 
                                           
-                        <div>
+                        <div className="see-more-button">
                           {viewCount.newCount != mintAddresses.length ? (
                               <button onClick={addViewCount}>
                                 See More
