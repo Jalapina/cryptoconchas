@@ -17,7 +17,8 @@
   background: #f49af6 !important;
 } */
 .MuiButton-label{
-  font-family: 'Bounties' !important;
+  font-family: "Bounties" !important;
+  font-size: 1.5em !important;
 }
 
 .MuiTypography-colorTextSecondary{
@@ -44,8 +45,6 @@
 }
 .display-image-container{
   vertical-align: top;
-  width: 105px;
-  height: 150px;
 }
 modal-overlay
 .modal{
@@ -64,18 +63,16 @@ modal-overlay
   height: 100%;
 }
 .modal-container{
-  background: #000000;
   font-family: 'Bounties';
-  width: 350px;
   margin: auto;
   position: fixed;
   left: 0;
   right: 0;
-  top: 30%;
+  top: 0;
+  bottom: 0;
   text-align: center;
   padding: 20px;
   box-shadow: -2px 5px 10px #73006f;
-  border-radius: 20px;
 }
 .minted-bakery-title{
   font-size: 4em;
@@ -119,4 +116,44 @@ modal-overlay
 @keyframes slideDown {
   0% {transform: translateY(-170px);}
   100% {transform: translateY(20px);opacity:1;}
+}
+
+@keyframes heartbeat {
+  from {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: center center;
+            transform-origin: center center;
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+  }
+  10% {
+    -webkit-transform: scale(0.91);
+            transform: scale(0.91);
+    -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in;
+  }
+  17% {
+    -webkit-transform: scale(0.98);
+            transform: scale(0.98);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+  }
+  33% {
+    -webkit-transform: scale(0.87);
+            transform: scale(0.87);
+    -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in;
+  }
+  45% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-animation-timing-function: ease-out;
+            animation-timing-function: ease-out;
+  }
+}
+
+.heartbeat {
+	-webkit-animation: heartbeat 1.5s infinite both;
+	        animation: heartbeat 1.5s infinite both;
 }

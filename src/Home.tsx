@@ -31,8 +31,8 @@ import conchaPink from './201.png';
 import bs58 from 'bs58';
 import $ from 'jquery';
 
-import Modal from "./modal";
-import useModal from './useModal';
+import bakery from './bakery-shop.png';
+import soon from './coming-soon.png';
 
 const MAX_NAME_LENGTH = 32;
 const MAX_URI_LENGTH = 200;
@@ -42,14 +42,13 @@ const MAX_CREATOR_LIMIT = 5;
 const MAX_DATA_SIZE = 4 + MAX_NAME_LENGTH + 4 + MAX_SYMBOL_LENGTH + 4 + MAX_URI_LENGTH + 2 + 1 + 4 + MAX_CREATOR_LIMIT * MAX_CREATOR_LEN;
 const MAX_METADATA_LEN = 1 + 32 + 32 + MAX_DATA_SIZE + 1 + 1 + 9 + 172;
 const CREATOR_ARRAY_START = 1 + 32 + 32 + 4 + MAX_NAME_LENGTH + 4 + MAX_URI_LENGTH + 4 + MAX_SYMBOL_LENGTH + 2 + 1 + 4;
-const candyMachineId = new PublicKey("E7CQio46GJz16H6bzkyV4N8nqoVKyT9DPJcV6j6ihMuv");
+const candyMachineId = new PublicKey("G9BAVZ6QXiw7vJ5a61MjL97CD62saF5s2QwRpot4ux6x");
 const ConnectButton = styled(WalletDialogButton)`
   width: 85%;
   height: 60px;
   margin-top: 10px;
   margin-bottom: 5px;
   background: #fff2d8;
-  color: #000;
   font-size: 16px;
   font-weight: bold;
 `;
@@ -100,7 +99,7 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
       <div onClick={handleClick}>
         
         {nftMetadata?(
-          <div>
+          <div className="NFT-container" style={{background:nftMetadata.attributes[2].value}}>
             <div className={"modal " + ( NftIsClicked ? `modalOpen` : "")}>
               
                 <div  onClick={handleClick}  className="close-icon-wrapper">
@@ -108,7 +107,7 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
                 </div>
 
                 {NftIsClicked ?(
-                  <div className="modal-container">
+                  <div className="modal-container" style={{background:nftMetadata.attributes[2].value}}>
 
                     <div className="nft-image-focus">
                       <img width="200px" src={nftMetadata.image} />
@@ -116,12 +115,13 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
                     
                     <div className="token-options">
                       <h2 className="token-name">{nftMetadata.name}</h2>
+                      <a href={"https://solscan.io/token/"+nftAddress.address+"?cluster=devnet"}>Explorer</a>
                     </div>
                   </div>
                 ): ""}
             </div>
 
-            <img style={{width:"150px"}} src={nftMetadata ? nftMetadata?.image:""}/>
+            <img style={{width:"75%"}} src={nftMetadata ? nftMetadata?.image:""}/>
 
           </div>
         ):
@@ -133,13 +133,6 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
               </g>
           </svg>
                 
-          <div className="share">
-            <svg className="twitter" viewBox="0 0 612 612" >
-              <path className="ani" d="M 612 116 c -23 10 -47 17 -72 20 26 -15 46 -40 55 -69 -24 14 -51 24 -80 30 a 125 125 0 0 0 -217 86 c 0 10 1 19 3 29 -104 -6 -196 -56 -258 -132 a 125 125 0 0 0 39 168 c -21 -1 -40 -6 -57 -16 v 2 c0 61 43 111 100 123 a127 127 0 0 1 -56 2 c 16 50 62 86 117 87 A 252 252 0 0 1 0 498 a 355 355 0 0 0 550 -301 l -1 -16 c 25 -17 46 -40 63 -65 z"  />
-              <path d="M 612 116 c -23 10 -47 17 -72 20 26 -15 46 -40 55 -69 -24 14 -51 24 -80 30 a 125 125 0 0 0 -217 86 c 0 10 1 19 3 29 -104 -6 -196 -56 -258 -132 a 125 125 0 0 0 39 168 c -21 -1 -40 -6 -57 -16 v 2 c0 61 43 111 100 123 a127 127 0 0 1 -56 2 c 16 50 62 86 117 87 A 252 252 0 0 1 0 498 a 355 355 0 0 0 550 -301 l -1 -16 c 25 -17 46 -40 63 -65 z"  />
-            </svg>
-          </div>
-
         </div>
       }
       </div>
@@ -148,16 +141,15 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
 }
 
 const Home = (props: HomeProps) => {
-  const {isShowing, toggle} = useModal();  
-  const [emptyArray,setEmptyArray] = useState<any[]>([])
-  const [metadata,setMetadata] = useState();
-  const [isUserMinting, setIsUserMinting] = useState(false);
+  
   const [candyMachine, setCandyMachine] = useState<CandyMachineAccount>();
+  
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
     message: '',
     severity: undefined,
   });
+
   const [isActive, setIsActive] = useState(false);
   const [endDate, setEndDate] = useState<Date>();
   const [itemsRemaining, setItemsRemaining] = useState<number>();
@@ -165,15 +157,24 @@ const Home = (props: HomeProps) => {
   const [isPresale, setIsPresale] = useState(false);
   const [discountPrice, setDiscountPrice] = useState<anchor.BN>();
 
+  const [isUserMinting, setIsUserMinting] = useState(false);
+  const [isClicked,setIsClicked] = useState<boolean>(false)
+  const [emptyArray,setEmptyArray] = useState<any[]>([])
+  const [mintAddresses,setMintAddresses] = useState<any[]>([])
+
+  const [viewCount, setViewCount] = useState({prevCount:24,newCount:24});
+
   const rpcUrl = props.rpcHost;
   const wallet = useWallet();
 
   const getMintAddresses = async (firstCreatorAddress: PublicKey) => {
 
     const metadataAccounts = await props.connection.getProgramAccounts(
+
       TOKEN_METADATA_PROGRAM_ID,
         {
           // The mint address is located at byte 33 and lasts for 32 bytes.
+          // conditions to the data
           dataSlice: { offset: 33, length: 32 },
 
           filters: [
@@ -194,6 +195,7 @@ const Home = (props: HomeProps) => {
     return metadataAccounts.map((metadataAccountInfo) => (
         bs58.encode(metadataAccountInfo.account.data)
     ));
+
   };
 
   const getCandyMachineCreator = async (candyMachine: PublicKey): Promise<[PublicKey, number]> => (
@@ -203,34 +205,73 @@ const Home = (props: HomeProps) => {
     )
   );
 
-  const getNFTs = async () => {
+  // const getCurrentWalletNFTs =  async () =>{
+  //   try{
+      
+  //     const { Metadata } = programs.metadata;
 
-    const { Metadata } = programs.metadata;
-    try{
-
-        const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
-        const mints = await getMintAddresses(candyMachineCreator[0]);
+  //     if (wallet.connected && candyMachine?.program && wallet.publicKey) {
+  //       console.log(anchorWallet.publicKey);
         
-        if(mints.length > 0){
-          for(let i=0;i<mints.length;i++){
-            
-              const metadata = await Metadata.getPDA(new PublicKey(mints[i]));
-              const tokenMetadata = await Metadata.load(props.connection, metadata);
-              console.log(metadata,mints[i]);
+  //       const allNFTs = await Metadata.findByOwnerV2(props.connection,anchorWallet.publicKey);
+  //     }
+        
               
-              setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:mints[i]}]);
+  //     } 
+  //     catch(err){
+  //       console.log(err);
+  //     }
+  // }
 
-            }
-          }
-          
-      } 
-      catch(err){
-        console.log(err);
+const addViewCount = () =>{
+
+  let newCount = viewCount.newCount + 5
+  setViewCount({...viewCount, prevCount: viewCount.newCount});
+
+  if(viewCount.newCount%mintAddresses.length===1){
+    return viewCount
+  }else if(newCount>mintAddresses.length){
+
+    newCount = mintAddresses.length - viewCount.newCount;
+    setViewCount({...viewCount, prevCount: viewCount.newCount, newCount:viewCount.newCount+newCount});
+  }
+  else{
+    setViewCount({...viewCount,prevCount: viewCount.newCount, newCount:newCount});
+  }
+
+  setIsClicked(true);
+}
+
+
+const getMints = async () =>{
+  const { Metadata } = programs.metadata;
+
+  try{
+
+    if(mintAddresses.length>0){
+      for(let i=0;i<viewCount.newCount;i++){
+        
+          const metadata = await Metadata.getPDA(new PublicKey(mintAddresses[i]));
+          const tokenMetadata = await Metadata.load(props.connection, metadata);
+          setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:mintAddresses[i]}]);
+
+        }
       }
+      
+  } 
+  catch(err){
+    console.log(err);
+  }
+}
 
-  };
+const getNFTs = async () => {
+    const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
+    const mints = await getMintAddresses(candyMachineCreator[0]);
+        
+    setMintAddresses(mints);
+};
 
-  const updateArray = () => {
+const updateArray = () => {
 
     const { Metadata } = programs.metadata;
     
@@ -241,30 +282,57 @@ const Home = (props: HomeProps) => {
         const candyMachineCreator = await getCandyMachineCreator(candyMachineId);
         const mints = await getMintAddresses(candyMachineCreator[0]);
         
-        if(mints.length>emptyArray.length){
-
+        if(mints.length>mintAddresses.length){
 
           const uniqueAddress = mints.filter(function(address) {
-            return !emptyArray.some(function(obj2) {
-              return address == obj2.address;
+            return !mintAddresses.some(function(mintAddress) {
+              return address == mintAddress;
             });
           });
+
+          console.log("uniqueAddress",uniqueAddress[0])
           
           const metadata = await Metadata.getPDA(new PublicKey(uniqueAddress[0]));
           const tokenMetadata = await Metadata.load(props.connection, metadata);
-          setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:uniqueAddress}]);
-            
-      
+          setEmptyArray(oldArray => [{uri:tokenMetadata.data.data.uri,address:uniqueAddress},...oldArray]);
+          setMintAddresses(oldArray => [uniqueAddress[0],...oldArray]);
+          setViewCount({...viewCount,newCount:viewCount.newCount+1});
         }
-        
-   
 
-      }},30000);
+      }},37000);
 
   }
   
   useEffect(()=>{
-      if(setEmptyArray.length<=1){
+    if(emptyArray.length<=1){
+      getMints();
+    }
+  },[mintAddresses]);
+
+  useEffect(()=>{
+    
+    if(isClicked){
+      setIsClicked(false);
+      const { Metadata } = programs.metadata;
+      console.log(viewCount);
+      const updateArrayCount = async () => {
+
+        for(let i=viewCount.prevCount;i<viewCount.newCount;i++){
+      
+        const metadata = await Metadata.getPDA(new PublicKey(mintAddresses[i]));
+        const tokenMetadata = await Metadata.load(props.connection, metadata);
+        setEmptyArray(oldArray => [...oldArray, {uri:tokenMetadata.data.data.uri,address:mintAddresses[i]}]);
+
+      }
+
+    }
+    updateArrayCount();
+    }
+
+  },[isClicked,setViewCount]);
+
+  useEffect(()=>{
+      if(emptyArray.length<=1){
         getNFTs();
       }
   },[]);
@@ -395,11 +463,9 @@ const Home = (props: HomeProps) => {
         const mintTxId = (
           await mintOneToken(candyMachine, wallet.publicKey)
         );
-        console.log("await for status",mintTxId)
         
         let status: any = { err: true };
         if (mintTxId[0]) {
-          console.log("in if",mintTxId)
           status = await awaitTransactionSignatureConfirmation(
             mintTxId[0],
             props.txTimeout,
@@ -407,8 +473,6 @@ const Home = (props: HomeProps) => {
             true,
           );
         }
-        
-
         
         if (status && !status.err) {
           // manual update since the refresh might not detect
@@ -433,6 +497,7 @@ const Home = (props: HomeProps) => {
     } catch (error: any) {
       let message = error.msg || 'Minting failed! Please try again!';
       if (!error.msg) {
+        console.log(error.msg)
         if (!error.message) {
           message = 'Transaction Timeout! Please try again.';
         } else if (error.message.indexOf('0x137')) {
@@ -522,7 +587,7 @@ const Home = (props: HomeProps) => {
             }}
           >
             {!wallet.connected ? (
-              <ConnectButton>Connect Wallet</ConnectButton>
+              <ConnectButton><p style={{color:"#000"}}>Connect Wallet</p></ConnectButton>
             ) : (
               <>
                 {candyMachine && (
@@ -680,7 +745,12 @@ const Home = (props: HomeProps) => {
         
       </Container>
       <div className="inventory" style={{boxShadow:"inset 1px 1px 5px #000",background:"#ffd495",color:"#fff"}} >
-        {(() => {
+        <div>
+
+          {/* <img style={{width:"75%", margin:"10%"}} src={soon}/> */}
+          
+          <h2 style={{fontFamily: 'Bounties'}}>Your Bakery</h2>
+          {/* {(() => {
             if(emptyArray.length>0){
               return(
                 <div className="token-image-container" >
@@ -691,7 +761,7 @@ const Home = (props: HomeProps) => {
                   {
                   emptyArray.map((nftAddress, index)=>{
                     return (
-                      <div key={index} className="display-image-container" style={{display:"inline-block"}}>
+                      <div key={index} className="display-image-container" style={{display:"inline-block", position:"relative"}}>
                         <DisplayImage
                           nftAddress={nftAddress}
                           />
@@ -704,7 +774,55 @@ const Home = (props: HomeProps) => {
               return(                
                 <div className="no-artwork">
                   
-                  <p className="slideDown other-font low-on-bread">You're low in bread!</p>
+                   <p className="slideDown other-font low-on-bread">You're low on bread!</p> 
+
+                </div>
+                )
+            }  
+          })()} */}
+        </div>
+
+        {(() => {
+            if(emptyArray.length>0){
+              return(
+                <div className="token-image-container" >
+                  <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Minted Bakery</h2>
+                  <p className="other-font mint-count">
+                    {mintAddresses.length}/1500
+                  </p>
+                  {
+                  emptyArray.map((nftAddress, index)=>{
+                    return (
+                      <div key={index} className="display-image-container" style={{display:"inline-block"}}>
+
+                        <DisplayImage
+                          nftAddress={nftAddress}
+                          />
+
+                      </div>
+                    )})
+                  }
+
+                                          
+                        <div>
+                          {viewCount.newCount != mintAddresses.length ? (
+                              <button onClick={addViewCount}>
+                                See More
+                              </button>
+                            ):""
+                          }
+                        </div> 
+
+                </div>
+              )
+            }else{
+              return(                
+                <div className="no-artwork">
+                  
+                  <p className="slideDown other-font low-on-bread">Getting this bread....</p>
+                  <div className="bakery-image-container">
+                    <img className="heartbeat" width="100px" src={bakery} />
+                  </div>  
 
                 </div>
                 )

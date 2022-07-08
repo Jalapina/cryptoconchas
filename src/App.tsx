@@ -153,7 +153,7 @@ const App = () => {
                 Evolution
               </div>
               <div className="timeline__event__description">
-                <p>Once first edition has been fully minted, our team will work on a new and eveolved concha. We will also venture into new blockchain projects that holders will have early access to.</p>
+                <p>Once first edition has been fully minted, our team will work on a new and evolved concha. We will also venture into new blockchain projects that holders will have early access to.</p>
               </div>
             </div>
           </div>

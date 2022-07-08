@@ -18,8 +18,8 @@ code {
 .MuiList-padding {
   background: #fff !important;
 }
-.makeStyles-root-1 .MuiDialogTitle-root{
-  background: #ff1ecf !important;
+.jss1 .MuiDialogTitle-root{
+  background: #ac168c !important;
 }
 .MuiContainer-root .MuiContainer-maxWidthLg{
   margin: 200px 0px 240px 0px !important;
@@ -28,8 +28,10 @@ code {
   background: #000 !important;
   color: #fff !important;
 }
+.MuiListItem-gutters{
+  background: #ff4cd9 !important;
+}
 .makeStyles-root-1 .MuiDialogContent-root .MuiListItem-root .MuiButton-root{
-  color: #525453 !important;
   font-family: 'Bounties' !important;  
   font-size: 1.4em !important;
 }
@@ -61,7 +63,7 @@ code {
   src: url("./Bounties-8MjWZ.ttf")
 }
 .MuiButton-contained{
-  /* background: #f49cf6 !important;  */
+  background: #f49cf6 !important; 
 }
 
 .wave {

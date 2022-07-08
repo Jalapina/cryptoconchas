@@ -11,7 +11,7 @@ export const CTAButton = styled(Button)`
   height: 60px;
   margin-top: 10px;
   margin-bottom: 5px;
-  color: #f1f1f1 !important;
+  color: #fff !important;
   background: #f49af6 !important;
   font-size: 16px;
   font-weight: bold;
@@ -52,7 +52,7 @@ export const MintButton = ({
       return <CircularProgress />;
     }
 
-    return 'MINT A CONCHA';
+    return 'MINT ON DEVNET';
   };
 
   return (
