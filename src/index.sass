@@ -84,6 +84,10 @@
     background: url("./conchas_white.png")
     background-size: 50%
     background-position: 106% 100%
+.loading-animation
+    height: 215px
+    width: 180px
+    text-align: center
 .NFT-container
     display: inline-block
     box-shadow: rgb(0 0 0) 1px 1px 0px, rgb(0 0 0) 0px 0px 0px 0px
@@ -97,17 +101,19 @@
     text-align: center
     cursor: pointer    
     img
-        margin-top: 10%
+        margin-top: 5%
         width: 30%
 .see-more-button
     text-align: center
     button
         border: 0px
         padding: 15px
-        margin-top: 45px
+        margin: 30px
         font-family: "Bounties"
         font-size: 20px
         cursor: pointer
+        color: #000
+        background: #fff
         &:hover
             background: #ded3d3
 @media (max-width: 550px)
@@ -115,3 +121,6 @@
         width: 50%
     .inventory
         padding: 0px
+    .NFT-container img
+        margin: 10%
+        width: 70%

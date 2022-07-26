@@ -6,8 +6,6 @@ import { Button} from 'antd';
 import Paper from '@material-ui/core/Paper';
 import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
-// import Metadata from '@metaplex-foundation/mpl-token-metadata';
-// import { deprecated } from "@metaplex-foundation/mpl-token-metadata";
 import { programs } from '@metaplex/js';
 import Typography from '@material-ui/core/Typography';
 import { Connection, clusterApiUrl,PublicKey } from '@solana/web3.js';
@@ -42,7 +40,7 @@ const MAX_CREATOR_LIMIT = 5;
 const MAX_DATA_SIZE = 4 + MAX_NAME_LENGTH + 4 + MAX_SYMBOL_LENGTH + 4 + MAX_URI_LENGTH + 2 + 1 + 4 + MAX_CREATOR_LIMIT * MAX_CREATOR_LEN;
 const MAX_METADATA_LEN = 1 + 32 + 32 + MAX_DATA_SIZE + 1 + 1 + 9 + 172;
 const CREATOR_ARRAY_START = 1 + 32 + 32 + 4 + MAX_NAME_LENGTH + 4 + MAX_URI_LENGTH + 4 + MAX_SYMBOL_LENGTH + 2 + 1 + 4;
-const candyMachineId = new PublicKey("G9BAVZ6QXiw7vJ5a61MjL97CD62saF5s2QwRpot4ux6x");
+const candyMachineId = new PublicKey("AsdfHuVMmrWJK52uu7R7A4Pm99sNDsfV37cXqZMdXJzm");
 const ConnectButton = styled(WalletDialogButton)`
   width: 85%;
   height: 60px;
@@ -96,10 +94,10 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
   }, [nftAddress]);
   
   return (
-      <div onClick={handleClick}>
+      <div style={{textAlign:"center"}} onClick={handleClick}>
         
         {nftMetadata?(
-          <div className="NFT-container" style={{background:nftMetadata.attributes[2].value}}>
+          <div className="NFT-container" style={{background:nftMetadata.attributes[2]? nftMetadata.attributes[2].value : ""}}>
             <div className={"modal " + ( NftIsClicked ? `modalOpen` : "")}>
               
                 <div  onClick={handleClick}  className="close-icon-wrapper">
@@ -107,14 +105,17 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
                 </div>
 
                 {NftIsClicked ?(
-                  <div className="modal-container" style={{background:nftMetadata.attributes[2].value}}>
+                  <div className="modal-container" style={{background:nftMetadata.attributes[2]? nftMetadata.attributes[2].value : ""}}>
 
                     <div className="nft-image-focus">
                       <img width="200px" src={nftMetadata.image} />
                     </div>
                     
                     <div className="token-options">
-                      <h2 className="token-name">{nftMetadata.name}</h2>
+                      <p style={{fontSize: "1em", fontFamily: 'Superfats'}}>{nftMetadata.name}</p>
+                      <p className="nft-attribute"><span style={{fontWeight: "bolder", display:"inline-block", paddingRight:"5px"}}>Frosting:</span>{nftMetadata.attributes[0].value}</p>
+                      <p className="nft-attribute"><span style={{fontWeight: "bolder", display:"inline-block", paddingRight:"5px"}}>Bread:</span>{nftMetadata.attributes[1].value}</p>
+                      <p className="nft-attribute"><span style={{fontWeight: "bolder", display:"inline-block", paddingRight:"5px"}}>Rarity:</span>{nftMetadata.attributes[3].value}</p>
                       <a href={"https://solscan.io/token/"+nftAddress.address+"?cluster=devnet"}>Explorer</a>
                     </div>
                   </div>
@@ -129,7 +130,7 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
 
           <svg className="blob" viewBox="0 0 550 550" xmlns="http://www.w3.org/2000/svg">
               <g transform="translate(300,300)">
-                <path d="M120,-157.6C152.7,-141.5,174.3,-102.6,194.8,-58.8C215.3,-14.9,234.6,33.8,228.4,80.8C222.2,127.8,190.4,173.1,148.1,184C105.8,195,52.9,171.5,-2.4,174.8C-57.8,178.2,-115.6,208.4,-137.5,190.9C-159.3,173.3,-145.3,108,-153,56.3C-160.7,4.6,-190.2,-33.4,-178.3,-54.2C-166.4,-75.1,-113.2,-78.8,-76.6,-93.6C-40,-108.3,-20,-134.2,11.9,-150.5C43.7,-166.8,87.4,-173.6,120,-157.6Z" fill="#FE840E" />
+                <path d="M120,-157.6C152.7,-141.5,174.3,-102.6,194.8,-58.8C215.3,-14.9,234.6,33.8,228.4,80.8C222.2,127.8,190.4,173.1,148.1,184C105.8,195,52.9,171.5,-2.4,174.8C-57.8,178.2,-115.6,208.4,-137.5,190.9C-159.3,173.3,-145.3,108,-153,56.3C-160.7,4.6,-190.2,-33.4,-178.3,-54.2C-166.4,-75.1,-113.2,-78.8,-76.6,-93.6C-40,-108.3,-20,-134.2,11.9,-150.5C43.7,-166.8,87.4,-173.6,120,-157.6Z" fill="#cf9541" />
               </g>
           </svg>
                 
@@ -162,6 +163,7 @@ const Home = (props: HomeProps) => {
   const [emptyArray,setEmptyArray] = useState<any[]>([])
   const [mintAddresses,setMintAddresses] = useState<any[]>([])
   const [walletNFTAddresses,setWalletNFTAddresses] = useState<any[]>([])
+  const [isWalletNotOccupied,setIsWalletNotOccupied] = useState<boolean>(false)
 
   const [viewCount, setViewCount] = useState({prevCount:24,newCount:24});
 
@@ -272,17 +274,15 @@ const Home = (props: HomeProps) => {
             });
           });
 
-          console.log("uniqueAddress",uniqueAddress[0])
-          
           const metadata = await Metadata.getPDA(new PublicKey(uniqueAddress[0]));
           const tokenMetadata = await Metadata.load(props.connection, metadata);
           setEmptyArray(oldArray => [{uri:tokenMetadata.data.data.uri,address:uniqueAddress},...oldArray]);
+          setWalletNFTAddresses(oldArray => [{uri:tokenMetadata.data.data.uri,address:uniqueAddress},...oldArray]);
           setMintAddresses(oldArray => [uniqueAddress[0],...oldArray]);
           setViewCount({...viewCount,newCount:viewCount.newCount+1});
         }
 
       }},37000);
-
   }
   
   useEffect(()=>{
@@ -296,7 +296,6 @@ const Home = (props: HomeProps) => {
     if(isClicked){
       setIsClicked(false);
       const { Metadata } = programs.metadata;
-      console.log(viewCount);
       const updateArrayCount = async () => {
 
         for(let i=viewCount.prevCount;i<viewCount.newCount;i++){
@@ -342,26 +341,28 @@ const Home = (props: HomeProps) => {
   useEffect(()=>{
 
       if (wallet.connected && wallet.ready && wallet.publicKey) {
-        console.log(wallet)
         getCurrentWalletNFTs();
       }
     
-  },[wallet.connected, wallet.ready]);
+  },[wallet.connected]);
 
   const getCurrentWalletNFTs =  async () =>{
-    
     const { Metadata } = programs.metadata;
     
     try{
       if (wallet.connected && wallet.ready && wallet.publicKey) {
-          
-          const allNFTs = await Metadata.findDataByOwner(props.connection,wallet.publicKey);
-          const CandyNFT = allNFTs.filter((r) => r.updateAuthority === "C5hqyJpUU1o28q2fcdyTkTwRdCCrDUqjccFnik9ZW25k");
+        console.log("***",wallet.publicKey)
+        
+        const allNFTs = await Metadata.findDataByOwner(props.connection,wallet.publicKey);
+        const CandyNFT = allNFTs.filter((r) => r.updateAuthority === "AsdfHuVMmrWJK52uu7R7A4Pm99sNDsfV37cXqZMdXJzm");
+        
+        if(CandyNFT.length == 0) return setIsWalletNotOccupied(true);
 
-          for(let i=0;i<CandyNFT.length;i++){
+        for(let i=0;i<CandyNFT.length;i++){
+            console.log(CandyNFT[i]);
             setWalletNFTAddresses(oldArray => [{uri:CandyNFT[i].data.uri,address:CandyNFT[0].mint},...oldArray]);
           }
-          
+
         }       
       } 
       catch(err){
@@ -512,7 +513,6 @@ const Home = (props: HomeProps) => {
     } catch (error: any) {
       let message = error.msg || 'Minting failed! Please try again!';
       if (!error.msg) {
-        console.log(error.msg)
         if (!error.message) {
           message = 'Transaction Timeout! Please try again.';
         } else if (error.message.indexOf('0x137')) {
@@ -784,6 +784,14 @@ const Home = (props: HomeProps) => {
                   }
                 </div>
               )
+            }else if(isWalletNotOccupied){
+              return(                
+                <div className="no-artwork">
+                  
+                   <p className="slideDown other-font low-on-bread">You have no bread</p> 
+
+                </div>
+                )
             }else{
               return(                
                 <div className="no-artwork">
