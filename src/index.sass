@@ -37,12 +37,20 @@
     animation: animation 1000ms linear both
     font-size: 4em
     font-family: 'Superfats'
-
+    color: #000
 .faq-question
-    color: #ffffff
+    color: #000
     font-family: Bounties
     h2
         font-size: 3em    
+.close-icon-wrapper
+    font-size: 5em
+    color: #000
+    margin: 0px 25px 25px 0px
+    position: absolute
+    right: 5px
+    top: 15px
+    text-align: right
 .faq-answer
     padding: 30px
     font-size: 23px
@@ -76,7 +84,7 @@
     background: red
 .mint-container-background
     background: red
-    z-index: -2
+    z-index: -1
     height: 100%
     position: absolute
     width: 100%
@@ -102,6 +110,7 @@
     cursor: pointer    
     img
         margin-top: 5%
+        max-width: 335px
         width: 30%
 .see-more-button
     text-align: center
@@ -116,7 +125,7 @@
         background: #fff
         &:hover
             background: #ded3d3
-@media (max-width: 550px)
+@media (max-width: 600px)
     .display-image-container
         width: 50%
     .inventory
@@ -124,3 +133,5 @@
     .NFT-container img
         margin: 10%
         width: 70%
+    .nft-image-focus
+        margin-top: 15%

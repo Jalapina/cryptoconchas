@@ -12,6 +12,9 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+p{
+  cursor: default;
+}
 .MuiDialogTitle-root h2 {
   font-family: 'Superfats' !important;  
 }

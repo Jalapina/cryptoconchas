@@ -1,5 +1,5 @@
 import './App.css';
-import { useMemo } from 'react';
+import { useMemo,useRef } from 'react';
 import * as anchor from '@project-serum/anchor';
 import Home from './Home';
 
@@ -63,6 +63,7 @@ const txTimeoutInMilliseconds = 30000;
 
 const App = () => {
   const endpoint = useMemo(() => clusterApiUrl(network), []);
+  let myRef = useRef<HTMLDivElement>(null);
 
   const wallets = useMemo(
     () => [
@@ -91,6 +92,7 @@ const App = () => {
                 connection={connection}
                 txTimeout={txTimeoutInMilliseconds}
                 rpcHost={rpcHost}
+                myRef={myRef}
               />
             </WalletDialogProvider>
           </WalletProvider>
@@ -203,7 +205,7 @@ const App = () => {
         <div className="faq-container">
           <div className="wave"></div>
 
-          <div className="faq-header">
+          <div className="faq-header" ref={myRef}>
             <h1>FAQ</h1>
           </div>
 
@@ -236,11 +238,11 @@ const App = () => {
             </div>
 
             <div className="faq">
-              <div className="faq-question">
+              <div className="faq-question" >
                 <h2>What's an NFT?</h2>
               </div>
               <div className="faq-answer">
-                <ul>
+                <ul >
                   <li>
                     Non-fungible token or NFT is a unique token that points to{" "}
                     <span style={{fontFamily:'Bounties'}}>WHATEVER YOU WANT</span>, usually a URL of a picture, video or a

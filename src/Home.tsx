@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback , useRef} from 'react';
 import * as anchor from '@project-serum/anchor';
 import styled from 'styled-components';
 import { Container, Snackbar } from '@material-ui/core';
@@ -40,7 +40,7 @@ const MAX_CREATOR_LIMIT = 5;
 const MAX_DATA_SIZE = 4 + MAX_NAME_LENGTH + 4 + MAX_SYMBOL_LENGTH + 4 + MAX_URI_LENGTH + 2 + 1 + 4 + MAX_CREATOR_LIMIT * MAX_CREATOR_LEN;
 const MAX_METADATA_LEN = 1 + 32 + 32 + MAX_DATA_SIZE + 1 + 1 + 9 + 172;
 const CREATOR_ARRAY_START = 1 + 32 + 32 + 4 + MAX_NAME_LENGTH + 4 + MAX_URI_LENGTH + 4 + MAX_SYMBOL_LENGTH + 2 + 1 + 4;
-const candyMachineId = new PublicKey("AsdfHuVMmrWJK52uu7R7A4Pm99sNDsfV37cXqZMdXJzm");
+const candyMachineId = new PublicKey("3PsqzWZoZLVKnanLubevr7agu2DQxRmSj5XRCXoL7fXJ");
 const ConnectButton = styled(WalletDialogButton)`
   width: 85%;
   height: 60px;
@@ -58,6 +58,7 @@ export interface HomeProps {
   connection: anchor.web3.Connection;
   txTimeout: number;
   rpcHost: string;
+  myRef: any;
 }
 
 const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
@@ -94,20 +95,18 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
   }, [nftAddress]);
   
   return (
-      <div style={{textAlign:"center"}} onClick={handleClick}>
+      <div style={{textAlign:"center"}}>
         
         {nftMetadata?(
-          <div className="NFT-container" style={{background:nftMetadata.attributes[2]? nftMetadata.attributes[2].value : ""}}>
+          <div className="NFT-container"  style={{background:nftMetadata.attributes[2]? nftMetadata.attributes[2].value : ""}}>
             <div className={"modal " + ( NftIsClicked ? `modalOpen` : "")}>
               
-                <div  onClick={handleClick}  className="close-icon-wrapper">
-                  {/* <img onClick={nftExpanded} className="close-icon" width="40px" src={closeIcon}/> */}
-                </div>
-
                 {NftIsClicked ?(
                   <div className="modal-container" style={{background:nftMetadata.attributes[2]? nftMetadata.attributes[2].value : ""}}>
-
-                    <div className="nft-image-focus">
+                    <div  onClick={handleClick} className="close-icon-wrapper">
+                      X
+                    </div>
+                    <div className="nft-image-focus" style={{height:"400px"}}>
                       <img width="200px" src={nftMetadata.image} />
                     </div>
                     
@@ -122,7 +121,7 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
                 ): ""}
             </div>
 
-            <img style={{width:"75%"}} src={nftMetadata ? nftMetadata?.image:""}/>
+            <img onClick={handleClick} style={{width:"75%"}} src={nftMetadata ? nftMetadata?.image:""}/>
 
           </div>
         ):
@@ -142,9 +141,12 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
 }
 
 const Home = (props: HomeProps) => {
-  
+  // console.log(scroll)
   const [candyMachine, setCandyMachine] = useState<CandyMachineAccount>();
   
+  const executeScroll = () => props.myRef.current.scrollIntoView()    
+
+
   const [alertState, setAlertState] = useState<AlertState>({
     open: false,
     message: '',
@@ -354,7 +356,7 @@ const Home = (props: HomeProps) => {
         console.log("***",wallet.publicKey)
         
         const allNFTs = await Metadata.findDataByOwner(props.connection,wallet.publicKey);
-        const CandyNFT = allNFTs.filter((r) => r.updateAuthority === "AsdfHuVMmrWJK52uu7R7A4Pm99sNDsfV37cXqZMdXJzm");
+        const CandyNFT = allNFTs.filter((r) => r.updateAuthority === "EU3fQYY9WqzzuD8HeNYvqh5wAX2csvpyDzFySc9NEajG");
         
         if(CandyNFT.length == 0) return setIsWalletNotOccupied(true);
 
@@ -516,7 +518,7 @@ const Home = (props: HomeProps) => {
         if (!error.message) {
           message = 'Transaction Timeout! Please try again.';
         } else if (error.message.indexOf('0x137')) {
-          message = `SOLD OUT!`;
+          // message = `SOLD OUT!`;
         } else if (error.message.indexOf('0x135')) {
           message = `Insufficient funds to mint. Please fund your wallet.`;
         }
@@ -579,7 +581,7 @@ const Home = (props: HomeProps) => {
     <div className="mint-container">
       <Container
         style={{
-          margin: `200px 0px 200px 0px`,
+          margin: `300px 0px 300px 0px`,
           overflow: ``,
           position: `relative`,
         }}
@@ -602,7 +604,7 @@ const Home = (props: HomeProps) => {
             }}
           >
             {!wallet.connected ? (
-              <ConnectButton><p style={{color:"#000"}}>Connect Wallet</p></ConnectButton>
+              <ConnectButton><p style={{color:"#fff"}}>Connect Wallet</p></ConnectButton>
             ) : (
               <>
                 {candyMachine && (
@@ -767,7 +769,7 @@ const Home = (props: HomeProps) => {
           {(() => {
             if(walletNFTAddresses.length>0){
               return(
-                <div className="token-image-container" >
+                <div style={{padding:"25px", background:"#f79cf6"}} className="token-image-container" >
                   <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Your Bakery</h2>
                   <p className="other-font mint-count">
                     {walletNFTAddresses.length}
@@ -786,17 +788,28 @@ const Home = (props: HomeProps) => {
               )
             }else if(isWalletNotOccupied){
               return(                
-                <div className="no-artwork">
+                <div className="no-artwork" style={{background: "#f79cf6", padding: "1px"}}>
                   
                    <p className="slideDown other-font low-on-bread">You have no bread</p> 
 
                 </div>
                 )
-            }else{
+            }else if(!wallet.connected){
               return(                
-                <div className="no-artwork">
+                <div className="no-artwork" style={{background:"#f69cf6",padding:"25px"}}>
                   
-                   <p className="slideDown other-font low-on-bread">Getting your bread...</p> 
+                   <p style={{padding:"1px"}} className="slideDown other-font low-on-bread">No wallet?</p> 
+                   <button style={{border: "0px", padding: "11px",color: "#fff",background: "#f79cf6",cursor:"pointer",textDecoration:"underline"}} onClick={executeScroll}>
+                    How to get a wallet
+                   </button>
+
+                </div>
+                )
+            }else if(isUserMinting){
+              return(                
+                <div className="no-artwork" style={{padding:"25px", background:"#f79cf6"}}>
+                  
+                   <p className="slideDown other-font loading low-on-bread" style={{fontSize:"1em"}}>Getting your bread</p> 
 
                 </div>
                 )
@@ -808,6 +821,16 @@ const Home = (props: HomeProps) => {
             if(emptyArray.length>0){
               return(
                 <div className="token-image-container" >
+                
+                    <svg
+                      preserveAspectRatio="none"
+                      viewBox="0 0 1200 120"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="#f69cf6"
+                    >
+                      <path d="M0 0v5.63C149.93 59 314.09 71.32 475.83 42.57c43-7.64 84.23-20.12 127.61-26.46 59-8.63 112.48 12.24 165.56 35.4C827.93 77.22 886 95.24 951.2 90c86.53-7 172.46-45.71 248.8-84.81V0z" />
+                    </svg>
+
                   <h2 className="other-font minted-bakery-title" style={{fontFamily: 'Bounties'}}>Minted Bakery</h2>
                   <p className="other-font mint-count">
                     {mintAddresses.length}/1996
@@ -840,11 +863,24 @@ const Home = (props: HomeProps) => {
             }else{
               return(                
                 <div className="no-artwork">
-                  
-                  <p className="slideDown other-font low-on-bread">Getting this bread....</p>
-                  <div className="bakery-image-container">
-                    <img className="heartbeat" width="100px" src={bakery} />
-                  </div>  
+                  <svg
+                    preserveAspectRatio="none"
+                    viewBox="0 0 1200 120"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#f69cf6"
+                  >
+                    <path d="M0 0v5.63C149.93 59 314.09 71.32 475.83 42.57c43-7.64 84.23-20.12 127.61-26.46 59-8.63 112.48 12.24 165.56 35.4C827.93 77.22 886 95.24 951.2 90c86.53-7 172.46-45.71 248.8-84.81V0z" />
+                  </svg>
+                  <p className="slideDown other-font low-on-bread">Getting this bread</p>
+                  <div className="loading-animation" style={{display:"inline-block"}}>
+
+                      <svg className="blob" viewBox="0 0 550 550" xmlns="http://www.w3.org/2000/svg">
+                          <g transform="translate(300,300)">
+                            <path d="M120,-157.6C152.7,-141.5,174.3,-102.6,194.8,-58.8C215.3,-14.9,234.6,33.8,228.4,80.8C222.2,127.8,190.4,173.1,148.1,184C105.8,195,52.9,171.5,-2.4,174.8C-57.8,178.2,-115.6,208.4,-137.5,190.9C-159.3,173.3,-145.3,108,-153,56.3C-160.7,4.6,-190.2,-33.4,-178.3,-54.2C-166.4,-75.1,-113.2,-78.8,-76.6,-93.6C-40,-108.3,-20,-134.2,11.9,-150.5C43.7,-166.8,87.4,-173.6,120,-157.6Z" fill="#000" />
+                          </g>
+                      </svg>
+                            
+                    </div>
 
                 </div>
                 )
