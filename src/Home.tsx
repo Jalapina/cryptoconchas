@@ -80,6 +80,7 @@ const DisplayImage = ({nftAddress}:any,props: HomeProps) => {
         return data.json();
       })
       .then(data => {
+        console.log(data)
         return setNftMetadata(data || []);
       })
       .catch(err => {
